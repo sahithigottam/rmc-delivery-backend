@@ -2,6 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Cache bust: 2026-10-04-20:40
 # Install minimal dependencies only
 RUN pip install --no-cache-dir fastapi uvicorn[standard]
 
