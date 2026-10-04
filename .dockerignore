@@ -1,0 +1,16 @@
+app/
+__pycache__
+*.pyc
+*.pyo
+.git
+.gitignore
+.env
+.env.local
+.DS_Store
+node_modules
+.next
+dist
+build
+.pytest_cache
+.venv
+venv
