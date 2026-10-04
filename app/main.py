@@ -82,10 +82,13 @@ async def lifespan(app: FastAPI):
         gmaps_service = await get_google_maps_client()
         load_mgr = get_load_manager()
         alert_svc = get_alert_service()
-        await start_traffic_monitor(gmaps_service, load_mgr, alert_svc)
-        logger.info("Background traffic monitor started (with RMC load tracking)")
+        if gmaps_service and settings.google_maps_api_key:
+            await start_traffic_monitor(gmaps_service, load_mgr, alert_svc)
+            logger.info("Background traffic monitor started (with RMC load tracking)")
+        else:
+            logger.warning("Skipping traffic monitor: Google Maps API key not configured")
     except Exception as e:
-        logger.error(f"Failed to start traffic monitor: {e}")
+        logger.warning(f"Traffic monitor startup deferred: {e} (will retry on first request)")
 
     yield
 
@@ -93,10 +96,13 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down RMC Delivery Route Optimizer API")
     await stop_traffic_monitor()
     logger.info("Background traffic monitor stopped")
-    gmaps_service = await get_google_maps_client()
-    if gmaps_service:
-        await gmaps_service.close()
-        logger.info("Google Maps service closed successfully.")
+    try:
+        gmaps_service = await get_google_maps_client()
+        if gmaps_service:
+            await gmaps_service.close()
+            logger.info("Google Maps service closed successfully.")
+    except Exception as e:
+        logger.warning(f"Error closing Google Maps service: {e}")
 
 
 # Create FastAPI application
