@@ -6,14 +6,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
 
-from app.api.v1 import api_router
-from app.config import settings
-from app.db import Base, engine
-from app.services.google_maps import GoogleMapsService
-from app.services.traffic_monitor import start_traffic_monitor, stop_traffic_monitor
-from app.dependencies import get_google_maps_client, get_load_manager, get_alert_service
+# from app.api.v1 import api_router
+# from app.config import settings
+# from app.db import Base, engine
+# from app.services.google_maps import GoogleMapsService
+# from app.services.traffic_monitor import start_traffic_monitor, stop_traffic_monitor
+# from app.dependencies import get_google_maps_client, get_load_manager, get_alert_service
 
 # ── Logging setup ──────────────────────────────────────────────────────────
 LOG_FORMAT = "%(asctime)s │ %(levelname)-8s │ %(name)-30s │ %(message)s"
@@ -107,10 +107,10 @@ async def lifespan(app: FastAPI):
 
 # Create FastAPI application
 app = FastAPI(
-    title=settings.api_title,
-    version=settings.api_version,
+    title="RMC Delivery Route Optimizer",
+    version="1.0.0",
     # lifespan=lifespan,  # Temporarily disabled for debugging
-    debug=settings.debug,
+    debug=False,
 )
 
 # CORS middleware
@@ -129,13 +129,13 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "service": settings.api_title,
-        "version": settings.api_version,
+        "service": "RMC Delivery Route Optimizer",
+        "version": "1.0.0",
     }
 
 
 # Include API routes
-app.include_router(api_router, prefix=settings.api_v1_prefix)
+# app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 
 # Root endpoint
@@ -143,9 +143,9 @@ app.include_router(api_router, prefix=settings.api_v1_prefix)
 async def root():
     """Root endpoint with API information"""
     return {
-        "title": settings.api_title,
-        "version": settings.api_version,
-        "docs": f"{settings.api_v1_prefix}/docs",
+        "title": "RMC Delivery Route Optimizer",
+        "version": "1.0.0",
+        "docs": "/api/v1/docs",
         "status": "running",
     }
 
