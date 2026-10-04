@@ -12,11 +12,10 @@ WORKDIR /app
 COPY --from=dependencies /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=dependencies /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 
-# Copy ONLY app files -.dockerignore ensures no old app/ directory
+# Copy ONLY app files - .dockerignore ensures no old app/ directory
 COPY main_standalone.py main.py
-COPY run.py run.py
 
 EXPOSE 8000
 
-# Entrypoint ensures proper signal handling
-ENTRYPOINT ["python", "run.py"]
+# Direct uvicorn with proper port handling
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

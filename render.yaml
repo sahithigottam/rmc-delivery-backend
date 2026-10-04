@@ -2,10 +2,7 @@ services:
   - type: web
     name: rmc-delivery-backend
     env: python
-    region: singapore
+    region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python run.py
-    envVars:
-      - key: PORT
-        value: 8000
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 8000
