@@ -1,18 +1,20 @@
+# Multi-stage build to eliminate Docker cache issues
+FROM python:3.11-slim as builder
+
+RUN pip install --no-cache-dir fastapi uvicorn[standard]
+
+# Final stage - completely separate, forces fresh build
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Clean up any old app directory from cache
-RUN rm -rf /app/app 2>/dev/null ; true
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
 
-# Install minimal dependencies only
-RUN pip install --no-cache-dir fastapi uvicorn[standard]
-
-# Copy only standalone main.py and run script
+# Copy ONLY new files - no old code
 COPY main_standalone.py main.py
 COPY run.py run.py
 
 EXPOSE 8000
 
-# Use Python to properly handle environment variables
 CMD ["python", "run.py"]
