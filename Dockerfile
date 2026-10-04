@@ -2,13 +2,14 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Cache bust: 2026-10-04-20:40
 # Install minimal dependencies only
 RUN pip install --no-cache-dir fastapi uvicorn[standard]
 
-# Copy only standalone main.py - not the app directory
+# Copy only standalone main.py and run script
 COPY main_standalone.py main.py
+COPY run.py run.py
 
 EXPOSE 8000
 
-CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+# Use Python to properly handle environment variables
+CMD ["python", "run.py"]
