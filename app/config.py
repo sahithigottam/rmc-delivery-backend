@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # Database
-    database_url: str = "sqlite:///./rmc_delivery.db"
+    database_url: str = "sqlite:///:memory:"
     db_echo: bool = False
 
     # Google Maps API
