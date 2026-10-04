@@ -16,9 +16,6 @@ from app.services.traffic_monitor import start_traffic_monitor, stop_traffic_mon
 from app.dependencies import get_google_maps_client, get_load_manager, get_alert_service
 
 # ── Logging setup ──────────────────────────────────────────────────────────
-LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
-os.makedirs(LOG_DIR, exist_ok=True)
-
 LOG_FORMAT = "%(asctime)s │ %(levelname)-8s │ %(name)-30s │ %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -32,27 +29,32 @@ console_handler.setLevel(settings.log_level)
 console_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
 root_logger.addHandler(console_handler)
 
-# File handler — rotating, keeps last 5 × 5MB files
-file_handler = logging.handlers.RotatingFileHandler(
-    os.path.join(LOG_DIR, "rmc-delivery.log"),
-    maxBytes=5 * 1024 * 1024,  # 5 MB
-    backupCount=5,
-    encoding="utf-8",
-)
-file_handler.setLevel(logging.DEBUG)  # capture everything to file
-file_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
-root_logger.addHandler(file_handler)
+# File handlers only in development
+if settings.env == "development":
+    LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
+    os.makedirs(LOG_DIR, exist_ok=True)
+    
+    # File handler — rotating, keeps last 5 × 5MB files
+    file_handler = logging.handlers.RotatingFileHandler(
+        os.path.join(LOG_DIR, "rmc-delivery.log"),
+        maxBytes=5 * 1024 * 1024,  # 5 MB
+        backupCount=5,
+        encoding="utf-8",
+    )
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
+    root_logger.addHandler(file_handler)
 
-# Separate error log — only WARNING+
-error_handler = logging.handlers.RotatingFileHandler(
-    os.path.join(LOG_DIR, "rmc-errors.log"),
-    maxBytes=5 * 1024 * 1024,
-    backupCount=3,
-    encoding="utf-8",
-)
-error_handler.setLevel(logging.WARNING)
-error_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
-root_logger.addHandler(error_handler)
+    # Separate error log
+    error_handler = logging.handlers.RotatingFileHandler(
+        os.path.join(LOG_DIR, "rmc-errors.log"),
+        maxBytes=5 * 1024 * 1024,
+        backupCount=3,
+        encoding="utf-8",
+    )
+    error_handler.setLevel(logging.WARNING)
+    error_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=LOG_DATE_FORMAT))
+    root_logger.addHandler(error_handler)
 
 # Quiet noisy third-party loggers
 logging.getLogger("httpx").setLevel(logging.WARNING)

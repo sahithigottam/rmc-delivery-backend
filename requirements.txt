@@ -6,6 +6,7 @@ sqlalchemy
 psycopg2-binary
 httpx
 python-dotenv
+cachetools
 pytest
 pytest-asyncio
 pytest-cov
