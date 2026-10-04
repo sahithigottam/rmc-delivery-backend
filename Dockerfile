@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Clean up any old app directory from cache
+RUN rm -rf /app/app 2>/dev/null ; true
+
 # Install minimal dependencies only
 RUN pip install --no-cache-dir fastapi uvicorn[standard]
 
