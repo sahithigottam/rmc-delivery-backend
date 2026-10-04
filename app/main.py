@@ -109,7 +109,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
-    lifespan=lifespan,
+    # lifespan=lifespan,  # Temporarily disabled for debugging
     debug=settings.debug,
 )
 
